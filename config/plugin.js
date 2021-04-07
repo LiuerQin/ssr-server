@@ -10,15 +10,15 @@
 
 exports.mongoose = {
   enable: true,
-  package: 'egg-mongoose'
+  package: 'egg-mongoose',
 }
 
 exports.routerGroup = {
   enable: true,
-  package: 'egg-router-group'
+  package: 'egg-router-group',
 }
 
 exports.validate = {
   enable: true,
-  package: 'egg-validate'
+  package: 'egg-validate',
 }

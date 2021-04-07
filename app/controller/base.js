@@ -1,24 +1,25 @@
+'use strict'
 // 定制规范
 
 const { Controller } = require('egg')
 class BaseController extends Controller {
-  success(data){
+  success(data) {
     this.ctx.body = {
       code: 0,
-      data
+      data,
     }
   }
   message(message) {
     this.ctx.body = {
       code: 0,
-      message
+      message,
     }
   }
-  error(message, code=-1, errors={}){
+  error(message, code = -1, errors = {}) {
     this.ctx.body = {
       code,
       message,
-      errors
+      errors,
     }
   }
 }

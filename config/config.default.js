@@ -28,14 +28,17 @@ module.exports = appInfo => {
     ...userConfig,
     security: {
       csrf: {
-        enable: false
+        enable: false,
       },
-      mongoose: {
-        client: {
-          url: 'mongodb://127.0.0.1:27017/ssrhub',
-          options: {}
-        }
-      }
-    }
+    },
+    mongoose: {
+      client: {
+        url: 'mongodb://127.0.0.1:27017/ssrhub',
+        options: {},
+      },
+    },
+    jwt: {
+      secret: '@#^s07w9&6^',
+    },
   }
 }

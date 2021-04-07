@@ -14,6 +14,7 @@ class UtilController extends Controller {
     })
 
     this.ctx.session.captcha = captcha.text
+    console.log('captcha => ', captcha.text)
     this.ctx.response.type = 'image/svg+xml'
     this.ctx.body = captcha.data
   }
