@@ -46,8 +46,9 @@ class UserController extends BaseController {
 
     const { email, password, captcha, nickname } = ctx.request.body
 
-    if (captcha.toUpperCase() === this.ctx.session.captcha.toUpperCase()) {
-      // 邮箱是否重复
+    if (captcha.toUpperCase() !== this.ctx.session.captcha.toUpperCase()) {
+      this.error('验证码错误')
+    } else {
       if (await this.checkEmail(email)) {
         this.error('邮箱重复啦')
       } else {
@@ -61,8 +62,6 @@ class UserController extends BaseController {
           this.message('注册成功')
         }
       }
-    } else {
-      this.error('验证码错误')
     }
   }
   async checkEmail(email) {
