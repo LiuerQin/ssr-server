@@ -23,12 +23,12 @@ class UtilController extends BaseController {
     const email = ctx.query.email
     const code = Math.random().toString().slice(2, 6)
     console.log(`邮箱${email}验证码-->${code}`)
+    ctx.session.emailcode = code
 
     const subject = '小刘的ssr项目-验证码'
     const text = ''
-    const html = `<h2>小刘社区</h2><p>${code}</p>`
+    const html = `<h2>小刘社区</h2><p>验证码：${code}</p>`
 
-    console.log('sendmail', this.service)
     const hasSend = await this.service.tools.sendMail(email, subject, text, html)
     if (hasSend) {
       this.message('发送成功')

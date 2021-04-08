@@ -15,9 +15,13 @@ const createRule = {
 class UserController extends BaseController {
   async login() {
     const { ctx, app } = this
-    const { email, captcha, password } = ctx.request.body
+    const { email, captcha, password, emailcode } = ctx.request.body
     if (captcha.toUpperCase() !== ctx.session.captcha.toUpperCase()) {
       return this.error('验证码错误')
+    }
+    console.log('emailcode', emailcode, ctx.session.emailcode)
+    if (emailcode !== ctx.session.emailcode) {
+      return this.error('邮箱验证码错误')
     }
     const user = await ctx.model.User.findOne({
       email,
@@ -47,21 +51,19 @@ class UserController extends BaseController {
     const { email, password, captcha, nickname } = ctx.request.body
 
     if (captcha.toUpperCase() !== this.ctx.session.captcha.toUpperCase()) {
-      this.error('验证码错误')
-    } else {
-      if (await this.checkEmail(email)) {
-        this.error('邮箱重复啦')
-      } else {
-        const ret = await ctx.model.User.create({
-          email,
-          password: md5(password + HashSalt),
-          nickname,
-        })
+      return this.error('验证码错误')
+    }
+    if (await this.checkEmail(email)) {
+      return this.error('邮箱重复啦')
+    }
+    const ret = await ctx.model.User.create({
+      email,
+      password: md5(password + HashSalt),
+      nickname,
+    })
 
-        if (ret._id) {
-          this.message('注册成功')
-        }
-      }
+    if (ret._id) {
+      return this.message('注册成功')
     }
   }
   async checkEmail(email) {
