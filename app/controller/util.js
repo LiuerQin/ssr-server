@@ -37,16 +37,16 @@ class UtilController extends BaseController {
       this.error('发送失败')
     }
   }
-  async uploadfile () {
-    const {ctx} = this
+  async uploadfile() {
+    const { ctx } = this
     const file = ctx.request.files[0]
-    const {name} = ctx.request.body
+    const { name } = ctx.request.body
     console.log(file, name)
     const targetDir = this.config.UPLOAD_DIR + `/${file.filename}`
     await fse.move(file.filepath, targetDir)
 
     this.success({
-      url: targetDir
+      url: targetDir,
     })
   }
 }
