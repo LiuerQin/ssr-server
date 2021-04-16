@@ -33,32 +33,34 @@ class ToolService extends Service {
       return false
     }
   }
-  async mergeFile (hash, newFilePath, size) {
+  async mergeFile(hash, newFilePath, size) {
     const chunkDir = path.resolve(this.config.UPLOAD_DIR, hash)
-    let chunks = fse.readFileSync(chunkDir)
+    let chunks = await fse.readdir(chunkDir)
     chunks.sort((a, b) => a.split('-')[1] - b.split('-')[1])
-    console.log('chunks1',chunks)
     chunks = chunks.map(chunk => {
       return path.resolve(chunkDir, chunk)
     })
-    console.log('chunks2',chunks)
     await this.mergeChunks(chunks, newFilePath, size)
   }
-  async mergeChunks (chunks, newFilePath, size) {
-    chunks.map((chunkPath, index) => {
-      return new Promise((resolve) => {
+  async mergeChunks(chunks, newFilePath, size) {
+    const pipeStream = (chunkPath, writeStream) => {
+      return new Promise(resolve => {
         const reader = fse.createReadStream(chunkPath)
         reader.on('end', () => {
           fse.unlinkSync(chunkPath)
           resolve()
         })
-        const pipeStream = fse.createWriteStream(newFilePath, {
-          start: index * size,
-          end: (index + 1) * size
-        })
-        reader.pipe(pipeStream)
+        reader.pipe(writeStream)
       })
-    })
+    }
+    await Promise.all(
+      chunks.map((chunkPath, index) => {
+        return pipeStream(chunkPath, fse.createWriteStream(newFilePath, {
+          start: index * size,
+          end: (index + 1) * size,
+        }))
+      })
+    )
   }
 }
 

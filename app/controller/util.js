@@ -40,10 +40,13 @@ class UtilController extends BaseController {
   }
   async uploadfile() {
     // /public/hash/(hash+index)
+    // 报错
+    // if(Math.random()>0.3){
+    //   return this.ctx.status = 500
+    // }
     const { ctx } = this
     const file = ctx.request.files[0]
     const { hash, name } = ctx.request.body
-    console.log(file, name, hash)
     const chunkPath = path.resolve(this.config.UPLOAD_DIR, hash)
     if (!fse.existsSync(chunkPath)) {
       await fse.mkdir(chunkPath)
@@ -53,14 +56,35 @@ class UtilController extends BaseController {
 
     this.message('文件切片上传成功')
   }
-  async mergefile () {
-    const { ext, hash, size} = this.ctx.request
-    console.log(ext, hash, size, '!!!!!!')
+  async mergefile() {
+    const { ext, hash, size } = this.ctx.request.body
     const newFilePath = path.resolve(this.config.UPLOAD_DIR, `${hash}.${ext}`)
     await this.ctx.service.tools.mergeFile(hash, newFilePath, size)
     this.success({
-      url: `/public/${hash}.${ext}`
+      url: `/public/${hash}.${ext}`,
     })
+  }
+  async checkfile() {
+    const { hash, ext } = this.ctx.request.body
+    // 查看文件是否存在
+    const fileExist = fse.existsSync(path.resolve(this.config.UPLOAD_DIR, `${hash}.${ext}`))
+    if (fileExist) {
+      return this.success({
+        uploaded: true,
+        uploadedList: [],
+      })
+    }
+    const existDir = fse.existsSync(path.resolve(this.config.UPLOAD_DIR, hash))
+    let uploadedList = []
+    if (existDir) {
+      uploadedList = await fse.readdir(path.resolve(this.config.UPLOAD_DIR, hash))
+    }
+    return this.success({
+      uploaded: false,
+      uploadedList,
+    })
+
+
   }
 }
 
