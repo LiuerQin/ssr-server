@@ -24,4 +24,8 @@ module.exports = app => {
     router.post('/login', login)
     router.post('/verify', verify)
   })
+  router.group({name: 'article', prefix: '/article'}, router => {
+    router.get('/', controller.article.index)
+    router.post('/create', jwt, controller.article.create)
+  })
 }
